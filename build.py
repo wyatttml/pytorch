@@ -19,12 +19,12 @@ class Config(object):
     # Specify if you want to use the system protocol buffer or not.
     # If you have protobuf installed, use the following two lines usually
     # suffice:
-    USE_SYSTEM_PROTOBUF = True
-    PROTOC_BINARY = "protoc"
+    #USE_SYSTEM_PROTOBUF = True
+    #PROTOC_BINARY = "protoc"
     # Otherwise, use the following line: we will build protobuf using the
     # included source file.
-    #USE_SYSTEM_PROTOBUF = False
-    #PROTOC_BINARY = os.path.join(GENDIR, 'third_party/google/protoc')
+    USE_SYSTEM_PROTOBUF = False
+    PROTOC_BINARY = GENDIR + '/third_party/google/protoc'
     # Note for the line above: if you are doing things like cross-compilation,
     # the built protoc compiler will not work on the host, in which case you
     # will need to provide a protoc binary that can run on the host environment.
@@ -40,6 +40,9 @@ class Config(object):
     # that does not depend on glog. If you wish to use glog, set USE_GLOG to
     # True.
     USE_GLOG = False
+
+    # Manually specified defines.
+    DEFINES = []
 
     # Manually specified include paths. These include paths are searched before
     # any auto-generated include paths.
@@ -69,6 +72,9 @@ class Config(object):
         'arch=compute_35,code=sm_35',
         'arch=compute_50,code=sm_50',
     ]
+    # additional CUDA cflags to pass to nvcc.
+    CUDA_CFLAGS = ["-m32"],
+
     # You can choose to add the path of the cuda libraries to the rpath, so that
     # during runtime you do not need to hard-code the library paths. You can,
     # of course, set this to False.
