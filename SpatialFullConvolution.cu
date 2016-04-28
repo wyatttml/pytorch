@@ -89,7 +89,7 @@ void THNN_CudaSpatialFullConvolution_updateOutput(
       THCState_getCurrentStream(state),
       THCudaTensor_data(state, columns),
       nOutputPlane, outputHeight, outputWidth, kH, kW, padH, padW, dH, dW,
-      THCudaTensor_data(state, output_n)
+      1, 1, THCudaTensor_data(state, output_n)
     );
 
     // Do Bias after:
@@ -180,7 +180,7 @@ void THNN_CudaSpatialFullConvolution_updateGradInput(
       THCState_getCurrentStream(state),
       THCudaTensor_data(state, gradOutput_n),
       nOutputPlane, outputHeight, outputWidth, kH, kW, padH, padW, dH, dW,
-      THCudaTensor_data(state, gradColumns)
+      1, 1, THCudaTensor_data(state, gradColumns)
     );
 
 
@@ -279,7 +279,7 @@ void THNN_CudaSpatialFullConvolution_accGradParameters(
       THCState_getCurrentStream(state),
       THCudaTensor_data(state, gradOutput_n),
       nOutputPlane, outputHeight, outputWidth, kH, kW, padH, padW, dH, dW,
-      THCudaTensor_data(state, columns)
+      1, 1, THCudaTensor_data(state, columns)
     );
 
     // M,N,K are dims of matrix A and B
