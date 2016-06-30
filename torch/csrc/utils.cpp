@@ -73,7 +73,6 @@ void THPUtils_setError(const char *format, ...)
 
 
 void THPUtils_invalidArguments(PyObject *given_args, const char *expected_args_desc) {
-  static const size_t BUFFER_SIZE = 10000;
   static const std::string PREFIX = "Invalid arguments! Got ";
   std::string error_msg;
   error_msg.reserve(2000);
