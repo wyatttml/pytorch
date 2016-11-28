@@ -1,5 +1,5 @@
 #include "THTensor.hpp"
-#include "../TensorTraits.hpp"
+#include "../Traits.hpp"
 
 
 namespace thd {
