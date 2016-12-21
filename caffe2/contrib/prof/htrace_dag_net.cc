@@ -1,45 +1,11 @@
 #include <htrace.hpp>
-#include <algorithm>
-#include <ctime>
 
+#include "caffe2/contrib/prof/htrace_conf.h"
 #include "caffe2/core/net.h"
 #include "caffe2/core/operator.h"
 
-CAFFE2_DEFINE_string(caffe2_htrace_conf, "", "Configuration string for htrace");
-
 namespace caffe2 {
 namespace {
-
-const string defaultHTraceConf(const string& net_name) {
-  // create a duplicate because we may need to modify the name
-  string net_name_copy(net_name);
-
-  // make sure the net name is a valid file name
-  std::replace(net_name_copy.begin(), net_name_copy.end(), '/', '_');
-  std::replace(net_name_copy.begin(), net_name_copy.end(), '\\', '_');
-
-  // take current local time
-  time_t rawtime;
-  std::time(&rawtime);
-  struct tm timeinfo;
-  localtime_r(&rawtime, &timeinfo);
-
-  // and append it to the log file name, in a human-readable format
-  std::string buf;
-  buf.resize(30); // 15 should be enough, but apparently is too short.
-  strftime(&buf[0], buf.size(), "%Y%m%d_%H%M%S", &timeinfo);
-  auto datetime = buf.data();
-
-  std::stringstream stream;
-  stream << HTRACE_LOG_PATH_KEY << "=/tmp/htrace_" << net_name_copy << "_log_"
-         << datetime << ";";
-  stream << HTRACE_LOCAL_FILE_RCV_PATH_KEY << "=/tmp/htrace_" << net_name_copy
-         << "_span_log_" << datetime << ";";
-  stream << HTRACE_SPAN_RECEIVER_KEY << "=local.file;";
-  stream << HTRACE_SAMPLER_KEY << "=always;";
-
-  return stream.str();
-}
 
 class HTraceDAGNet : public DAGNetBase {
  public:
@@ -50,7 +16,7 @@ class HTraceDAGNet : public DAGNetBase {
       std::thread::id worker_id = worker.get_id();
       std::stringstream stream;
       stream << "worker-scope-" << worker_id;
-      htrace_worker_scope_map_[worker_id] = new htrace::Scope(
+      htrace_worker_scope_map_[worker_id] = std::make_shared<htrace::Scope>(
           htrace_tracer_, htrace_root_scope_.GetSpanId(), stream.str());
     }
   }
@@ -65,15 +31,20 @@ class HTraceDAGNet : public DAGNetBase {
 
   ~HTraceDAGNet() {
     VLOG(1) << "Closing all htrace scopes for workers";
-    for (const auto& kv : htrace_worker_scope_map_) {
-      delete kv.second;
+
+    // Due to the implementation of htrace,
+    // we need to make sure we delete the scopes in order.
+    // Simply calling map.clear() may not preserve the order.
+    auto iter = htrace_worker_scope_map_.begin();
+    while (iter != htrace_worker_scope_map_.end()) {
+      iter = htrace_worker_scope_map_.erase(iter);
     }
   }
 
  protected:
   bool RunAt(const std::vector<int>& chain) override {
     std::thread::id thread_id = std::this_thread::get_id();
-    htrace::Scope* worker_scope = htrace_worker_scope_map_[thread_id];
+    auto worker_scope = htrace_worker_scope_map_[thread_id];
 
     bool success = true;
     for (const auto idx : chain) {
@@ -101,7 +72,8 @@ class HTraceDAGNet : public DAGNetBase {
   htrace::Scope htrace_root_scope_{htrace_tracer_,
                                    htrace_sampler_,
                                    "root-scope"};
-  CaffeMap<std::thread::id, htrace::Scope*> htrace_worker_scope_map_;
+  std::map<std::thread::id, std::shared_ptr<htrace::Scope>>
+      htrace_worker_scope_map_;
   int run_count_ = 0;
 };
 
