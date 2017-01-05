@@ -50,12 +50,12 @@ To run the tutorials you'll need ipython-notebooks and matplotlib, which can be 
 ## Build status (known working)
 
 Ubuntu 14.04 (GCC)
-- [ ] Default CPU build
+- [x] Default CPU build
 - [x] Default GPU build
 
 OS X (Clang)
 - [x] Default CPU build
-- [ ] Default GPU build
+- [x] Default GPU build
 
 Options (both Clang and GCC)
 - [ ] Nervana GPU
@@ -63,8 +63,8 @@ Options (both Clang and GCC)
 - [ ] RocksDB
 - [ ] MPI
 - [ ] OpenMP
-- [ ] No LMDB
-- [ ] No LevelDB
+- [x] No LMDB
+- [x] No LevelDB
 - [x] No OpenCV
 
 BLAS
@@ -73,6 +73,6 @@ BLAS
 - [ ] MKL
 
 Other
-- [ ] CMake 2.8 support
-- [ ] List of dependencies for Ubuntu 14.04
-- [ ] List of dependencies for OS X
+- [x] CMake 2.8 support
+- [x] List of dependencies for Ubuntu 14.04
+- [x] List of dependencies for OS X
