@@ -20,8 +20,8 @@ class Address : public ::fbcollective::transport::Address {
   explicit Address(const std::vector<char>&);
   virtual ~Address() {}
 
-  virtual std::string str() const override;
   virtual std::vector<char> bytes() const override;
+  virtual std::string str() const override;
 
   static Address fromSockName(int fd);
   static Address fromPeerName(int fd);

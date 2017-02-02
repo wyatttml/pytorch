@@ -17,9 +17,6 @@ class Buffer : public ::fbcollective::transport::Buffer {
  public:
   virtual ~Buffer();
 
-  void handleRecvCompletion();
-  void handleSendCompletion();
-
   virtual void send(size_t offset, size_t length) override;
 
   virtual void waitRecv() override;
@@ -27,7 +24,10 @@ class Buffer : public ::fbcollective::transport::Buffer {
 
  protected:
   // May only be constructed from helper function in pair.cc
-  explicit Buffer(Pair* pair, int slot, void* ptr, size_t size);
+  Buffer(Pair* pair, int slot, void* ptr, size_t size);
+
+  void handleRecvCompletion();
+  void handleSendCompletion();
 
   Pair* pair_;
 
