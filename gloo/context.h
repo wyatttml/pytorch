@@ -12,8 +12,6 @@
 #include <memory>
 #include <vector>
 
-#include "gloo/rendezvous/store.h"
-#include "gloo/transport/device.h"
 #include "gloo/transport/pair.h"
 
 namespace gloo {
@@ -21,13 +19,10 @@ namespace gloo {
 class Context {
  public:
   Context(int rank, int size);
+  virtual ~Context();
 
   const int rank;
   const int size;
-
-  void connectFullMesh(
-      rendezvous::Store& store,
-      std::shared_ptr<transport::Device>& dev);
 
   std::unique_ptr<transport::Pair>& getPair(int i);
 
