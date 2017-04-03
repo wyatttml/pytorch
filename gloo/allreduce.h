@@ -16,9 +16,9 @@ namespace gloo {
 template <typename T>
 class Allreduce : public Algorithm {
  public:
-  Allreduce(
+  explicit Allreduce(
     const std::shared_ptr<Context>& context,
-    const ReductionFunction<T>* fn)
+    const ReductionFunction<T>* fn = nullptr)
       : Algorithm(context), fn_(fn) {
     if (fn_ == nullptr) {
       fn_= ReductionFunction<T>::sum;
